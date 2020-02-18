@@ -6,8 +6,11 @@ public class GameManager : MonoBehaviour
 {
     public PlayerController playerController;
     public GameObject food;
-    
 
+    private void Start()
+    {
+        Time.timeScale = 0f;
+    }
     public void ResetGame()
     {
         Time.timeScale = 1f;
@@ -17,5 +20,10 @@ public class GameManager : MonoBehaviour
             food.transform.GetChild(a).gameObject.SetActive(true);
         }
         playerController.gameObject.GetComponent<Player>().ResetPlayer();
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 }
