@@ -6,49 +6,59 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public float varHunger;
-    public Image hungerImage;
-
-    public enum playerHungerStats
-    {
-        Starving,
-        Neutral,
-        Full
-    }
-    public playerHungerStats varHungerStats;
+    Vector2 startPos;
 
     public float runSpeed;
+    public float jumpSpeed;
+
+
     Rigidbody2D rb;
     Animator anim;
-
-    public int angka;
+    Collider2D col;
+    public void ResetPosition()
+    {
+        transform.position = startPos;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        startPos = transform.position;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        //print("Aku ada fungsi start");
-        varHunger = 100f;
+        col = GetComponent<Collider2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        HungerTime();
-        UpdateUI();
-        CheckStats();
-
-
+       
         Run();
         Flip();
-        //print(angka++);
-        if (Input.GetKeyDown(KeyCode.A)){
-            print(angka++);
+        Jump();
+        
+    }
+
+
+
+
+
+
+    void Jump()
+    {
+        if (col.IsTouchingLayers(LayerMask.GetMask("Foreground")))
+        {
+            if (CrossPlatformInputManager.GetButtonDown("Jump"))
+            {
+                Vector2 jumpVelocity = new Vector2(0f, jumpSpeed);
+                rb.velocity += jumpVelocity;
+            }
         }
+        
     }
 
     void Run()
     {
+       
         float inputHorizontal = CrossPlatformInputManager.GetAxis("Horizontal");
         Vector2 velocity = new Vector2(inputHorizontal * runSpeed, rb.velocity.y);
         rb.velocity = velocity;
@@ -64,42 +74,5 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(Mathf.Sign(rb.velocity.x), 1f);
         }
-    }
-
-    void CheckStats()
-    {
-        switch (varHungerStats)
-        {
-            case playerHungerStats.Neutral:
-                print("Masih bertenaga");
-                break;
-            case playerHungerStats.Starving:
-                print("Aku lapar");
-                break;
-            default:
-                print("Aku Kenyang");
-                break;
-        }
-    }
-    void HungerTime()
-    {
-        varHunger -= 1 * Time.deltaTime;
-
-        if(varHunger <= 30)
-        {
-            varHungerStats = playerHungerStats.Starving;
-        }else if(varHunger <= 60)
-        {
-            varHungerStats = playerHungerStats.Neutral;
-        }
-        else
-        {
-            varHungerStats = playerHungerStats.Full;
-        }
-    }
-
-    void UpdateUI()
-    {
-        hungerImage.fillAmount = (varHunger / 100);
     }
 }
